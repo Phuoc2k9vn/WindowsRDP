@@ -13,7 +13,7 @@ jobs:
           Expand-Archive playit.gg.zip -DestinationPath playit.gg
 
           # Run playit.gg proxy
-          Start-Process -FilePath .\playit.gg\playit.exe -ArgumentList "start" -NoNewWindow
+          Start-Process -FilePath .\playit.gg\playit.exe
 
       - name: Enable RDP access
         run: |
