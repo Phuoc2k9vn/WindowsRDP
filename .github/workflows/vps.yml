@@ -1,0 +1,37 @@
+name: Windows VPS with playit.gg
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Set up playit.gg
+        run: |
+          # Download and install playit.gg proxy
+          Invoke-WebRequest https://playit.gg/download/windows -OutFile playit.gg.zip
+          Expand-Archive playit.gg.zip -DestinationPath playit.gg
+
+          # Run playit.gg proxy
+          Start-Process -FilePath .\playit.gg\playit.exe -ArgumentList "start" -NoNewWindow
+
+      - name: Enable RDP access
+        run: |
+          # Enable Remote Desktop
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
+
+      - name: Change RDP password
+        run: |
+          # Change RDP password
+          $env:ADMINPASSWORD = "admin"
+          net user runneradmin $env:ADMINPASSWORD
+
+      - name: Get playit.gg information
+        run: |
+          # Get playit.gg details
+          Invoke-WebRequest https://playit.gg -UseBasicParsing | Select-Object -ExpandProperty Content
+
+      - name: Run loop
+        run: ping -t localhost
