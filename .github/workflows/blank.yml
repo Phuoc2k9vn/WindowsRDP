@@ -1,44 +1,31 @@
-name: Windows VPS with Chrome Remote Desktop
+name: WindowsVps
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  deploy_vps:
     runs-on: windows-latest
+    
     steps:
-      - name: Download Chrome Remote Desktop Installer
-        run: |
-          Invoke-WebRequest https://dl.google.com/chrome-remote-desktop/chromeremotedesktophost.msi -OutFile chromeremotedesktophost.msi
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Install Chrome Remote Desktop
-        run: |
-          Start-Process msiexec -Wait -ArgumentList '/i chromeremotedesktophost.msi /quiet'
+    - name: Install Chrome Remote Desktop
+      run: |
+        $url = "https://dl.google.com/chrome-remote-desktop/chromeremotedesktophost.msi"
+        $output = "chrome_remote_desktop.msi"
+        Invoke-WebRequest -Uri $url -OutFile $output
+        Start-Process -FilePath $output -ArgumentList '/quiet' -Wait
 
-      - name: Set up Chrome Remote Desktop
-        run: |
-          # Authenticate with Google
-          $credFilePath = "$env:USERPROFILE\remote-desktop-credentials.json"
-          $credContents = @"
-          {
-            "clientId": "${{ secrets.CHROME_REMOTE_DESKTOP_CLIENT_ID }}",
-            "clientSecret": "${{ secrets.CHROME_REMOTE_DESKTOP_CLIENT_SECRET }}",
-            "refreshToken": "${{ secrets.CHROME_REMOTE_DESKTOP_REFRESH_TOKEN }}"
-          }
-          "@
-          Set-Content -Path $credFilePath -Value $credContents
+    - name: login chrome
+      run: |
+        & "${Env:PROGRAMFILES(X86)}\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" --code="4/0AfJohXn76YyMQNV3oj_UmYru_6oiSGmlT_xolmMdcl9fSLVbmdz7kAssuDELVyrm6gWuZQ" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$Env:COMPUTERNAME
 
-          # Configure Chrome Remote Desktop
-          chrome-remote-desktop --headless --no-chromeos-login --pre-launch --start
-
-      - name: Enable Remote Desktop
-        run: chrome-remote-desktop --start
-
-      - name: Set Chrome Remote Desktop PIN
-        run: |
-          # Set the PIN for the remote session
-          $pin = "1234"
-          chrome-remote-desktop --set-pin=$pin
-
-      - name: Run loop
-        run: ping -t localhost
+    - name: Set Chrome Remote Desktop PIN
+      run: |
+        $pin = "1234"
+        $cmd = "C:\Program Files (x86)\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe"
+        Start-Process -FilePath $cmd -ArgumentList "--pin=$pin" -Wait
