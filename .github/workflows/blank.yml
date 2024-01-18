@@ -1,28 +1,33 @@
-name: WindowsVps
+name: Windows VPS with RDP using Ngrok
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  deploy_vps:
+  build:
     runs-on: windows-latest
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
 
-    - name: Install Chrome Remote Desktop
-      run: |
-        $url = "https://dl.google.com/edgedl/chrome-remote-desktop/chromeremotedesktophost.msi"
-        $output = "chrome_remote_desktop.msi"
-        Invoke-WebRequest -Uri $url -OutFile $output
-        Start-Process -FilePath $output -ArgumentList '/quiet' -Wait
+      - name: install plsyit
+        shell: powershell
+        run: |
+         $downloadUrl = "https://github.com/playit-cloud/playit-agent/releases/download/v0.9.3/playit-0.9.3-signed.exe"
+         $outputPath = "C:/playit.exe"
+         Invoke-WebRequest -Uri $downloadUrl -OutFile $outputPath
+         Start-Process -FilePath $outputPath -ArgumentList "/S" -Wait
 
-    - name: login chrome
-      run: |
-        & "${Env:PROGRAMFILES(X86)}\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" --code="4/0AfJohXn76YyMQNV3oj_UmYru_6oiSGmlT_xolmMdcl9fSLVbmdz7kAssuDELVyrm6gWuZQ" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$Env:COMPUTERNAME
-        $pin = "1234"
-        $cmd = "C:\Program Files (x86)\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe"
-        Start-Process -FilePath $cmd -ArgumentList "--pin=$pin" -Wait
+      - name: Activate RDP access
+        run: |
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+          Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+          Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
+        
+      - name: Change RDP password
+        run: net user admin admin
+
+      - name: active playit
+        run: |
+          Start-Process -FilePath $C:/playit.exe
+          
+      - name: Run loop
+        run: ping -t localhost
