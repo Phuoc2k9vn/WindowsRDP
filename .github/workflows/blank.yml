@@ -1,0 +1,30 @@
+name: Windows VPS with Chrome Remote Desktop
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Download Chrome Remote Desktop Installer
+        run: |
+          Invoke-WebRequest https://dl.google.com/chrome-remote-desktop/chromeremotedesktophost.msi -OutFile chromeremotedesktophost.msi
+
+      - name: Install Chrome Remote Desktop
+        run: |
+          Start-Process msiexec -Wait -ArgumentList '/i chromeremotedesktophost.msi /quiet'
+
+      - name: Set up Chrome Remote Desktop
+        run: |
+
+      - name: Enable Remote Desktop
+        run: & "${Env:PROGRAMFILES(X86)}\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" --code="4/0AfJohXmKzXBtzZN5cHEdoB09l8nDSs42QGhy12OBciEj4_uq0ZqOnY90S6lmxGG24CODtg" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$Env:COMPUTERNAME
+
+      - name: Set Chrome Remote Desktop PIN
+        run: |
+          $pin = "1234"
+          chrome-remote-desktop --set-pin=$pin
+
+      - name: Run loop
+        run: ping -t localhost
