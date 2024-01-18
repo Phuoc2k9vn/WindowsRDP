@@ -23,7 +23,12 @@ jobs:
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
         
       - name: Change RDP password
-        run: net user admin admin
+        run: |
+          $Username = "admin"
+          $Password = ConvertTo-SecureString -String "admin" -AsPlainText -Force
+          $User = New-LocalUser -Name $Username -Password $Password -FullName "New User" -Description "New user account" -NoPasswordExpiration
+          Add-LocalGroupMember -Group "Administrators" -Member $User.Name
+        
 
       - name: active playit
         run: |
