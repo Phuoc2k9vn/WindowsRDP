@@ -23,9 +23,6 @@ jobs:
     - name: login chrome
       run: |
         & "${Env:PROGRAMFILES(X86)}\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe" --code="4/0AfJohXn76YyMQNV3oj_UmYru_6oiSGmlT_xolmMdcl9fSLVbmdz7kAssuDELVyrm6gWuZQ" --redirect-url="https://remotedesktop.google.com/_/oauthredirect" --name=$Env:COMPUTERNAME
-
-    - name: Set Chrome Remote Desktop PIN
-      run: |
         $pin = "1234"
         $cmd = "C:\Program Files (x86)\Google\Chrome Remote Desktop\CurrentVersion\remoting_start_host.exe"
         Start-Process -FilePath $cmd -ArgumentList "--pin=$pin" -Wait
