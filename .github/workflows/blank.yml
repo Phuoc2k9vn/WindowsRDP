@@ -15,7 +15,7 @@ jobs:
 
     - name: Install Chrome Remote Desktop
       run: |
-        $url = "https://dl.google.com/chrome-remote-desktop/chromeremotedesktophost.msi"
+        $url = "https://dl.google.com/edgedl/chrome-remote-desktop/chromeremotedesktophost.msi"
         $output = "chrome_remote_desktop.msi"
         Invoke-WebRequest -Uri $url -OutFile $output
         Start-Process -FilePath $output -ArgumentList '/quiet' -Wait
