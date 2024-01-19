@@ -16,7 +16,7 @@ jobs:
       - name: Run Ngrok
         shell: powershell
         run: |
-          .\playit\playit.exe
+          .\ngrok\playit.exe
           Start-Process Powershell -ArgumentList '-Noexit -Command ".\ngrok\playit.exe"'
           
       - name: Activate RDP access
