@@ -1,4 +1,4 @@
-name: Windows VPS with RDP using Ngrok
+name: Windows VPS 
 
 on:
   workflow_dispatch:
@@ -8,13 +8,17 @@ jobs:
     runs-on: windows-latest
     steps:
 
-      - name: install plsyit
+      - name: downloads playit
         shell: powershell
         run: |
-         $downloadUrl = "https://github.com/playit-cloud/playit-agent/releases/download/v0.9.3/playit-0.9.3-signed.exe"
-         $outputPath = "C:/playit.exe"
-         Invoke-WebRequest -Uri $downloadUrl -OutFile $outputPath
-         Start-Process -FilePath $outputPath -ArgumentList "/S" -Wait
+         Invoke-WebRequest https://github.com/playit-cloud/playit-agent/releases/download/v0.9.3/playit-0.9.3-signed.exe -OutFile playit.exe
+
+      - name: Run Ngrok
+        shell: powershell
+        run: |
+          .\playit.exe
+          Start-Process Powershell -ArgumentList '-Noexit -Command ".\playit.exe"'
+          
 
       - name: Activate RDP access
         run: |
@@ -22,9 +26,6 @@ jobs:
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
         
-      - name: active playit
-        run: |
-          Start-Process -FilePath $C:/playit.exe
-          
+   
       - name: Run loop
         run: ping -t localhost
