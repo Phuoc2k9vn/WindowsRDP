@@ -1,4 +1,4 @@
-name: Windows VPS 
+name: Windows VPS
 
 on:
   workflow_dispatch:
@@ -7,25 +7,29 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-
-      - name: downloads playit
+      - name: Download Ngrok
         shell: powershell
         run: |
-         Invoke-WebRequest https://github.com/playit-cloud/playit-agent/releases/download/v0.9.3/playit-0.9.3-signed.exe -OutFile playit.exe
-         dir
+          Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+          Expand-Archive ngrok.zip
+          
       - name: Run Ngrok
         shell: powershell
         run: |
-          .\playit.exe
-          Start-Process Powershell -ArgumentList '-Noexit -Command ".\playit.exe"'
+          .\ngrok\ngrok.exe authtoken $Env:NGROK_AUTH_TOKEN
+          Start-Process Powershell -ArgumentList '-Noexit -Command ".\ngrok\ngrok.exe tcp 3389"'
           
-
       - name: Activate RDP access
         run: |
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
           Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
         
-   
+      - name: Change RDP password
+        env: 
+          ADMINPASSWORD: ${{ secrets.ADMINPASSWORD }}
+        run: net user runneradmin $Env:ADMINPASSWORD
+        
+        
       - name: Run loop
         run: ping -t localhost
