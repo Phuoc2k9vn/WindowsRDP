@@ -12,7 +12,7 @@ jobs:
         shell: powershell
         run: |
          Invoke-WebRequest https://github.com/playit-cloud/playit-agent/releases/download/v0.9.3/playit-0.9.3-signed.exe -OutFile playit.exe
-
+         dir
       - name: Run Ngrok
         shell: powershell
         run: |
