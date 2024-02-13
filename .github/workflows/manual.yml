@@ -1,0 +1,14 @@
+name: server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Download Ngrok
+        run: |
+         ssh movie.gabe565.com 
+          
+        
