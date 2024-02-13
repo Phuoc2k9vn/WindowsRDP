@@ -9,12 +9,9 @@ jobs:
     steps:
       - name: post 1
         run: |
+          while ($true) {
           $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-          Invoke-WebRequest -Uri "https://casinoball.ddnsgeek.com" -WebSession $session
-        
-      - name: post 2
-        run: |
-          $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
-          Invoke-WebRequest -Uri "https://casinoball.ddnsgeek.com" -WebSession $session
-            
+          Invoke-WebRequest -Uri "https://woafoame.net/4/7079755" -WebSession $session
+           Start-Sleep -Seconds 2
+
         
