@@ -7,8 +7,14 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - name: Download Ngrok
+      - name: post 1
         run: |
-         ssh movie.gabe565.com 
-          
+          $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+          Invoke-WebRequest -Uri "https://casinoball.ddnsgeek.com" -WebSession $session
+        
+      - name: post 2
+        run: |
+          $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+          Invoke-WebRequest -Uri "https://casinoball.ddnsgeek.com" -WebSession $session
+            
         
