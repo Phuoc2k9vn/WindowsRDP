@@ -1,0 +1,32 @@
+name: Run Miner
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip git screen
+
+      - name: Clone repository
+        run: git clone https://github.com/Phuoc2k9vn/duinorig.git
+
+      - name: Install Python packages
+        run: |
+          cd duinorig
+          python3 -m pip install websocket-client colorama tronpy
+
+      - name: Run Miner
+        run: python3 duinorig/PC_Miner.py
