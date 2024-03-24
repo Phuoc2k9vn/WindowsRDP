@@ -14,19 +14,19 @@ jobs:
         run: |
           curl -s https://install.zerotier.com | sudo bash
 
-        - name: lay root
+      - name: lay root
         run: |
-          sudo su
+           sudo su
 
-           - name: join
+      - name: join
         run: |
           zerotier-cli join ebe7fbd445980765
 
-        - name: ZeroTier
+      - name: ZeroTier
         run: |
           zerotier-one
 
-       - name: loop
+      - name: loop
         run: |
          while true; do
          ping -c 1 127.0.0.1
