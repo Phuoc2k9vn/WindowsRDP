@@ -1,4 +1,4 @@
-name:penSSH
+name: openSSH
 
 on: [push]
 
